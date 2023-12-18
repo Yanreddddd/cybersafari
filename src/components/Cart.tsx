@@ -33,8 +33,9 @@ const Cart = () => {
       </SheetTrigger>
       <SheetContent className="flex w-full flex-col pr-0 sm:max-w-lg">
         <SheetHeader className="space-y-2.5 pr-6">
-          <SheetTitle>Cart (0)</SheetTitle>
+          <SheetTitle>Cart ({itemCount}) </SheetTitle>
         </SheetHeader>
+        {/* Cart Conditional Logic */}
         {itemCount > 0 ? (
           <>
             <div className="flex w-full flex-col pr-6">
