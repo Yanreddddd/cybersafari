@@ -1,15 +1,34 @@
 "use client";
 
 import { Icons } from "@/components/Icons";
-import { buttonVariants } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import { Label } from "@radix-ui/react-label";
 import { ArrowRight } from "lucide-react";
 import Link from "next/link";
 import React from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import {
+  TAuthCredentialsValidator,
+  AuthCredentialsValidator,
+} from "@/lib/validators/account-credentials-validator";
 
 const page = () => {
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+  } = useForm<TAuthCredentialsValidator>({
+    resolver: zodResolver(AuthCredentialsValidator),
+  });
+
+  const onSubmit = ({ email, password }: TAuthCredentialsValidator) => {
+    // Send DATA TO SERVER
+  };
+
   return (
     <>
       <div className="container relative flex pt-20 flex-col items-center lg:px-0">
@@ -30,14 +49,15 @@ const page = () => {
           </div>
 
           <div className="grid gap-6">
-            <form onSubmit={null}>
+            <form onSubmit={handleSubmit(onSubmit)}>
               <div className="grid gap-2">
                 {/* Email Form */}
                 <div className="grid gap-1 py-2">
                   <Label htmlFor="email">Email</Label>
                   <Input
+                    {...register("email")}
                     className={cn({
-                      "focus-visible:ring-red-500": true,
+                      "focus-visible:ring-red-500": errors.email,
                     })}
                     placeholder="user@email.com"
                   />
@@ -46,12 +66,15 @@ const page = () => {
                 <div className="grid gap-1 py-2">
                   <Label htmlFor="email">Password</Label>
                   <Input
+                    {...register("password")}
                     className={cn({
-                      "focus-visible:ring-red-500": true,
+                      "focus-visible:ring-red-500": errors.password,
                     })}
                     placeholder="Password"
                   />
                 </div>
+
+                <Button>Sign Up</Button>
               </div>
             </form>
           </div>
