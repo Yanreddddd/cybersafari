@@ -3,7 +3,13 @@ import { BeforeChangeHook } from "payload/dist/collections/config/types";
 
 export const Users: CollectionConfig = {
   slug: "users",
-  auth: true,
+  auth: { 
+    verify: {
+      generateEmailHTML: ({ token }) => {
+        return `<p>please verify aaccount</p>`
+      }
+    }
+  },
   access: {
     read: () => true,
     create: () => true,
