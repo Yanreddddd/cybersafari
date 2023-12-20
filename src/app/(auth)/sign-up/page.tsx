@@ -15,6 +15,7 @@ import {
   AuthCredentialsValidator,
 } from "@/lib/validators/account-credentials-validator";
 import { trpc } from "@/trpc/client";
+import { TRPCClientError } from "@trpc/client";
 
 const page = () => {
   const {
@@ -30,9 +31,9 @@ const page = () => {
 
   const onSubmit = ({ email, password }: TAuthCredentialsValidator) => {
     // Send DATA TO SERVER
-    // TODO: error - invalid field: role! 
     mutate({ email, password });
   };
+  // TODO: error - invalid field: role!
 
   return (
     <>

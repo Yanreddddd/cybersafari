@@ -1,4 +1,5 @@
 import { CollectionConfig } from "payload/types";
+import { BeforeChangeHook } from "payload/dist/collections/config/types";
 
 export const Users: CollectionConfig = {
   slug: "users",
@@ -10,12 +11,12 @@ export const Users: CollectionConfig = {
   fields: [
     {
       name: "role",
-      defaultValue: 'user',
+      defaultValue: "user",
       required: true,
       type: "select",
       options: [
         { label: "Admin", value: "admin" },
-        { label: "User", value: "user " },
+        { label: "User", value: "user" },
       ],
     },
   ],
