@@ -6,7 +6,7 @@ export const Users: CollectionConfig = {
   auth: { 
     verify: {
       generateEmailHTML: ({ token }) => {
-        return `<p>please verify aaccount</p>`
+        return `<a href='${process.env.NEXT_PUBLIC_SERVER_URL}/verify-email?token=${token}'>Verify Account</a>`
       }
     }
   },
@@ -15,7 +15,7 @@ export const Users: CollectionConfig = {
     create: () => true,
   },
   fields: [
-    {
+    { 
       name: "role",
       defaultValue: "user",
       required: true,
