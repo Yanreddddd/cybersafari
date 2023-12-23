@@ -1,3 +1,4 @@
+import VerifyEmail from "@/components/VerifyEmail";
 import Image from "next/image";
 
 interface PageProps {
@@ -11,11 +12,15 @@ const VerifyEmailPage = ({ searchParams }: PageProps) => {
   const toEmail = searchParams.to;
 
   return (
+    // Letting users know that we send email verifictation link
     <div className="container relative flex pt-20 flex-col items-center justify-center lg:px-0">
       <div className="mx-auto flex w-full flex-col justify-center space-y-6 sm:w-[350px]">
         {token && typeof token === "string" ? (
-          <div className="grid gap-6"></div>
+          <div className="grid gap-6">
+            <VerifyEmail token={token} />
+          </div>
         ) : (
+          
           <div className="flex h-full flex-col items-center justify-center">
             <div className="relative mb-4 h-60 w-60 text-muted-foreground">
               <Image

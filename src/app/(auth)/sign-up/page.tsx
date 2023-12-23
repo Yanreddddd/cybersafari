@@ -33,7 +33,6 @@ const page = () => {
     // Send DATA TO SERVER
     mutate({ email, password });
   };
-  // TODO: error - invalid field: role!
 
   return (
     <>
