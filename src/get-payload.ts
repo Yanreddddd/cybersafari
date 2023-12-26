@@ -45,6 +45,7 @@ export const getPayloadClient = async ({
     cached.promise = payload.init({
       email: {
         transport,
+        // Email test - must use personal email registered email in resend to use "onboarding@resend.dev", all other emails don't work, unless we have a custom domain 
         fromAddress: "onboarding@resend.dev", 
         fromName: "Cybersafari",
       },
