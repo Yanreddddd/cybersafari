@@ -5,7 +5,7 @@ import { Button, buttonVariants } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import { Label } from "@radix-ui/react-label";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, Loader2 } from "lucide-react";
 import Link from "next/link";
 import React from "react";
 import { useForm } from "react-hook-form";
@@ -56,12 +56,9 @@ const page = () => {
     },
   });
 
-  const onSubmit = ({
-    email,
-    password,
-  }: TAuthCredentialsValidator) => {
+  const onSubmit = ({ email, password }: TAuthCredentialsValidator) => {
     // Send DATA TO SERVER
-    mutate({ email, password, });
+    mutate({ email, password });
   };
 
   return (
@@ -120,8 +117,6 @@ const page = () => {
                   )}
                 </div>
 
-                
-
                 {/*   TODO: Password Confirmation 
                 <div className="grid gap-1 py-2">
                   <Label htmlFor="confirmPassword">Confirm Password</Label>
@@ -144,7 +139,12 @@ const page = () => {
                   </p>
                 )} */}
 
-                <Button type="submit" disabled={!isValid}>Sign Up</Button>
+                <Button disabled={isLoading}>
+                  {isLoading && (
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  )}
+                  Log In
+                </Button>
               </div>
             </form>
           </div>
