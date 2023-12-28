@@ -2,6 +2,7 @@ import MaxWidthWrapper from "@/components/MaxWidthWrapper";
 import { Button, buttonVariants } from "@/components/ui/button";
 import Link from "next/link";
 import { PERKS } from "../config";
+import ProductReel from "@/components/ProductReel";
 
 
 export default function Home() {
@@ -27,6 +28,7 @@ export default function Home() {
         </div>
 
         {/* TODO: List products */}
+        <ProductReel title="Brand New" href="/poroducts"/>
       </MaxWidthWrapper>
 
       <section className="border-t border-gray-200 bg-gray-50">
