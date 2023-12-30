@@ -5,6 +5,7 @@ import { TQueryValidator } from "../lib/validators/query-validators";
 import { trpc } from "../trpc/client";
 import Link from "next/link";
 import React from "react";
+import ProductListing from "./ProductListing";
 
 // Create interface productreelprops with title string
 interface ProductReelProps {
@@ -34,7 +35,9 @@ const ProductReel = (props: ProductReelProps) => {
 let map: (Product | null )[] = []
 if (products && products.length) {
   map = products
-} else if (isLoading)
+} else if (isLoading) {
+  map = new Array<null>(query.limit ?? FALLBACK_LIMIT).fill(null)
+}
 
   return (
     <section className="py-12">
@@ -62,7 +65,11 @@ if (products && products.length) {
 
       <div className="relative">
         <div className="mt-6 flex items-center w-full">
-          <div className="w-full grid grid-cols-2 gap-x-4 gap-y-10 sm:gap-x-6 md:grid-cols-4 md:gap-y-10 lg:gap-x-8"></div>
+          <div className="w-full grid grid-cols-2 gap-x-4 gap-y-10 sm:gap-x-6 md:grid-cols-4 md:gap-y-10 lg:gap-x-8">
+            {map.map((product, i) => (
+              <ProductListing key={i} product={product} index={i}/>
+            ))}
+          </div>
         </div>
       </div>
     </section>
