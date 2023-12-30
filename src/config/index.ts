@@ -1,4 +1,12 @@
-import { ArrowDownToLineIcon, BadgeCheck, Leaf } from "lucide-react";
+import {
+  ArrowDownToLineIcon,
+  BadgeCheck,
+  HelpingHandIcon,
+  Leaf,
+  RocketIcon,
+  ShieldCheck,
+  UsersRoundIcon,
+} from "lucide-react";
 
 export const PRODUCT_CATEGORIES = [
   {
@@ -47,22 +55,27 @@ export const PRODUCT_CATEGORIES = [
 
 export const PERKS = [
   {
-    name: "Instant Delivery",
-    Icon: ArrowDownToLineIcon,
+    name: "Instant Access Guarantee",
+    Icon: RocketIcon,
     description:
-      "Get your assets delivered to your email in seconds and download them right away.",
+      "Enjoy instant and lifetime access to your purchased digital assets.",
   },
   {
-    name: "Guaranteed Quality",
-    Icon: BadgeCheck,
+    name: "Quality Control Assurance",
+    Icon: ShieldCheck,
     description:
-      "Every asset in our platform is verified by our team to ensure highest quality standards.",
+      "Every digital asset undergoes rigorous quality checks by our expert team.",
   },
   {
-    name: "For The Planet",
-    Icon: Leaf,
+    name: "Dedicated Customer Support",
+    Icon: HelpingHandIcon,
     description:
-      "1% of our sales goes to the preservation adn restoration of the natural environment.",
+      " Personalized and responsive customer support for all your inquiries.",
+  },
+  {
+    name: "Digital Ecosystem Participation",
+    Icon: UsersRoundIcon,
+    description:
+      "Seamlessly transition between being a buyer and a seller on our dynamic platform.",
   },
 ];
-
