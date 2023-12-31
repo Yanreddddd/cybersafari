@@ -7,7 +7,7 @@ const nextConfig = {
             hostname: 'localhost',
             port: '3000',
             pathname: '**',
-            domains: ['localhost:3000'],
+            // domains: ['localhost:3000'],
           },
         ],
       },
