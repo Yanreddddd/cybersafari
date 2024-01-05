@@ -1,8 +1,11 @@
 "use client";
 
+import { Products } from "@/collections/Products/Products";
+import { Button } from "@/components/ui/button";
 import { PRODUCT_CATEGORIES } from "@/config";
 import useCart from "@/hooks/use-cart";
-import { cn } from "@/lib/utils";
+import { cn, formatPrice } from "@/lib/utils";
+import { Check, Loader2, X } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
@@ -11,6 +14,12 @@ const Page = () => {
   const { items, removeItem } = useCart();
 
   const [isMounted, setIsMounted] = useState<boolean>(false);
+
+  const cartTotal = items.reduce((total, { product }) => {
+    return total + product.price;
+  }, 0);
+
+  const fee = 1;
 
   useEffect(() => {
     setIsMounted(true);
@@ -60,7 +69,7 @@ const Page = () => {
             >
               {isMounted &&
                 items.map(({ product }) => {
-                  const category = PRODUCT_CATEGORIES.find(
+                  const label = PRODUCT_CATEGORIES.find(
                     (c) => c.value === product.category
                   )?.label;
 
@@ -68,16 +77,117 @@ const Page = () => {
 
                   return (
                     <li key={product.id} className="flex py-6 sm:py-10">
-                      <div className="relative h-24 w-24">
-              {typeof image !== "string" && image.url ? (
-                <Image fill src={image.url} alt='product image' className="" />
-              ): null}
+                      <div className="flex-shrink-0">
+                        <div className="relative h-24 w-24">
+                          {typeof image !== "string" && image.url ? (
+                            <Image
+                              fill
+                              src={image.url}
+                              alt="product image"
+                              className="w-full h-full rounded-md object-cover object-center sm:h-48 sm:w-48"
+                            />
+                          ) : null}
+                        </div>
+                      </div>
+
+                      <div className="ml-4 flex flex-1 flex-col justify-between sm:ml-6">
+                        <div className="relative pr-9 sm:grid sm:grid-cols-2 sm:gap-x-6 sm:pr-0">
+                          <div>
+                            <div className="flex justify-between">
+                              <h3 className="text-sm">
+                                <Link
+                                  href={`/product/${product.id}`}
+                                  className="font-medium text-gray-700 hover:text-gray-800"
+                                >
+                                  {product.name}
+                                </Link>
+                              </h3>
+                            </div>
+
+                            <div className="mt-1 flex text-sm">
+                              <p className="text-muted-foreground">
+                                Category: {label}
+                              </p>
+                            </div>
+
+                            <p className="mt-1 text-sm font-medium text-gray-900">
+                              {formatPrice(product.price)}
+                            </p>
+                          </div>
+
+                          <div className="mt-4 sm:mt-0 sm:pr-9 w-20">
+                            <div className="absolute right-0 top-0">
+                              <Button
+                                aria-label="remove product"
+                                onClick={() => removeItem(product.id)}
+                                variant="ghost"
+                              >
+                                <X className="h-5 w-5" aria-hidden="true"></X>
+                              </Button>
+                            </div>
+                          </div>
+                        </div>
+                        <p className="mt-4 flex space-x-2 text-sm text-gray-700">
+                          <Check className="h-5 w-5 flex-shrink-0 text-green-500" />
+
+                          <span>Instant Access Guarantee</span>
+                        </p>
                       </div>
                     </li>
                   );
                 })}
             </ul>
           </div>
+
+          <section className="mt-16 rounded-lg bg-gray-50 px-4 py-6 sm:p-6 lg:col-span-5 lg:mt-0 lg:p-8">
+            <h2 className="text-lg font-medium text-gray-900">Order summary</h2>
+
+            <div className="mt-6 space-y-4">
+              <div className="flex items-center justify-between">
+                <p className="text-sm text-gray-600">Subtotal</p>
+                <p className="text-sm font-medium text-gray-900">
+                  {isMounted ? (
+                    formatPrice(cartTotal)
+                  ) : (
+                    <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
+                  )}
+                </p>
+              </div>
+
+              <div className="flex items-center justify-between border-t border-gray-200 pt-4">
+                <div className="flex items-center text-sm text-muted-foreground">
+                  <span>Flat Transaction Fee</span>
+                </div>
+                <div className="text-sm font-medium text-gray-900">
+                  {isMounted ? (
+                    formatPrice(fee)
+                  ) : (
+                    <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
+                  )}
+                </div>
+              </div>
+
+              <div className="flex items-center justify-between border-t border-gray-200">
+                <div className="text-base font-medium text-gray-900">
+                  Order Total
+                </div>
+                <div className="text-base font-medium text-gray-900">
+                  <div className="text-sm font-medium text-gray-900">
+                    {isMounted ? (
+                      formatPrice(cartTotal + fee)
+                    ) : (
+                      <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              <div className="mt-6">
+                <Button className="w-full" size="lg" 
+                >Checkout</Button>
+              </div>
+            </div>
+          </section>
         </div>
       </div>
     </div>
