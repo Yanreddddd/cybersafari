@@ -1,12 +1,69 @@
+import { BeforeChangeHook } from "payload/dist/collections/config/types";
 import { PRODUCT_CATEGORIES } from "../../config";
 import { CollectionConfig } from "payload/types";
+import { Product } from "@/payload-types";
+import { User } from "payload/dist/auth";
+import { stripe } from "../../lib/stripe";
 
+const addUser: BeforeChangeHook<Product> = async ({ req, data }) => {
+  const user = req.user;
+
+  return { ...data, user: user.id };
+};
+// Payload Data Config Docs: https://payloadcms.com/docs/guides/data-configuration
 export const Products: CollectionConfig = {
   slug: "products",
   admin: {
     useAsTitle: "name",
   },
   access: {},
+  hooks: {
+    // Create and Update products to Stripe
+    beforeChange: [
+      addUser,
+      async (args) => {
+        if (args.operation === "create") {
+          const data = args.data as Product;
+
+          const createdProduct = await stripe.products.create({
+            name: data.name,
+            default_price_data: {
+              currency: "usd",
+              unit_amount: Math.round(data.price * 100),
+            },
+          });
+
+          const updated: Product = {
+            ...data,
+            stripeId: createdProduct.id,
+            priceId: createdProduct.default_price as string,
+          }
+          return updated
+        } else if (args.operation === "update") {
+          const data = args.data as Product;
+
+          const updatedProduct = await stripe.products.update(data.stripeId!, {
+            name: data.name,
+            default_price: data.priceId!,
+          });
+
+          const updated: Product = {
+            ...data,
+            stripeId: updatedProduct.id,
+            priceId: updatedProduct.default_price as string,
+          }
+          return updated
+          // const { data, req } = args;
+          // const user = req.user as User;
+          // const product = data as Product;
+
+          // if (user.role !== "admin" && product.approvedForSale === "approved") {
+          //   throw new Error("You are not authorized to change this product");
+          // }
+        }
+      },
+    ],
+  },
   fields: [
     {
       name: "user",
