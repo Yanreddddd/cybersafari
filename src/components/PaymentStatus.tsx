@@ -42,12 +42,13 @@ const PaymentStatus = ({ orderEmail, orderId, isPaid }: PaymentStatusProps) => {
       <div>
         <p className="font-medium text-gray-900">Order Status</p>
         <p className="text-muted-foreground">
-          {isPaid ? 
-          (
-            <p className="text-green-500">Payment Successful</p>
-          ) : (
-            <p className="text-gray-500">Pending Payment</p>
-          )}
+          {isPaid ? "Payment Successful" : "Pending Payment"}
+          {/* // (
+          //   <p className="text-green-500">Payment Successful</p>
+          // ) : (
+          //   <p className="text-gray-500">Pending Payment</p>
+          // ) */}
+          
           
         </p>
       </div>

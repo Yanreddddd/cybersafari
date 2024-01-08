@@ -8,6 +8,9 @@ import { inferAsyncReturnType } from "@trpc/server";
 import bodyParser from "body-parser";
 import { IncomingMessage } from "http";
 import { stripeWebhookHandler } from "./webhooks";
+import nextBuild from "next/dist/build";
+import path from "path";
+
 
 dotenv.config;
 
@@ -32,6 +35,9 @@ const webhookMiddleware = bodyParser.json({
 });
 
 app.post("/api/webhooks/stripe", webhookMiddleware, stripeWebhookHandler);
+
+
+
 const start = async () => {
   const payload = await getPayloadClient({
     initOptions: {
@@ -41,6 +47,16 @@ const start = async () => {
       },
     },
   });
+  
+  if (process.env.NEXT_BUILD) {
+    app.listen(PORT, async () => {
+      payload.logger.info("Next.js is building for production");
+      // @ts-expect-error
+      await nextBuild(path.join(__dirname, "../"));
+  
+      process.exit();
+    });
+  }
 
   app.use(
     "/api/trpc",
