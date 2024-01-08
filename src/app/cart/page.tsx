@@ -121,7 +121,7 @@ const Page = () => {
 
                             <div className="mt-1 flex text-sm">
                               <p className="text-muted-foreground">
-                                Category: {label}
+                                {label}
                               </p>
                             </div>
 
