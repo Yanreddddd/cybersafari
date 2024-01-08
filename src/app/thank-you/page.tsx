@@ -3,7 +3,7 @@ import { PRODUCT_CATEGORIES } from "@/config";
 import { getPayloadClient } from "@/get-payload";
 import { getServerSideUser } from "@/lib/payload-utils";
 import { formatPrice } from "@/lib/utils";
-import { Product, ProductFile } from "@/payload-types";
+import { Product, ProductFile, User } from "@/payload-types";
 import { cookies } from "next/headers";
 import Image from "next/image";
 import Link from "next/link";
@@ -16,7 +16,6 @@ interface PageProps {
 }
 
 const ThankYouPage = async ({ searchParams }: PageProps) => {
-
   const orderId = searchParams.orderId;
   const nextCookes = cookies();
 
@@ -167,7 +166,11 @@ const ThankYouPage = async ({ searchParams }: PageProps) => {
                 </div>
               </div>
 
-              <PaymentStatus />
+              <PaymentStatus
+                orderEmail={(order.user as User).email}
+                orderId={orderId as string}
+                isPaid={order._isPaid}
+              />
 
               <div className="mt-16">
                 <Link
