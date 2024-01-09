@@ -105,6 +105,7 @@ var start = function () { return __awaiter(void 0, void 0, void 0, function () {
                 })];
             case 1:
                 payload = _a.sent();
+                // TODO: Not working - app.listen twice getting error - Address already in use
                 // if (process.env.NEXT_BUILD) {
                 //   app.listen(PORT, async () => {
                 //     payload.logger.info("Next.js is building for production");
