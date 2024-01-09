@@ -105,36 +105,47 @@ var start = function () { return __awaiter(void 0, void 0, void 0, function () {
                 })];
             case 1:
                 payload = _a.sent();
-                if (process.env.NEXT_BUILD) {
-                    app.listen(PORT, function () { return __awaiter(void 0, void 0, void 0, function () {
-                        return __generator(this, function (_a) {
-                            switch (_a.label) {
-                                case 0:
-                                    payload.logger.info("Next.js is building for production");
-                                    // @ts-expect-error
-                                    return [4 /*yield*/, (0, build_1.default)(path_1.default.join(__dirname, "../"))];
-                                case 1:
-                                    // @ts-expect-error
-                                    _a.sent();
-                                    process.exit();
-                                    return [2 /*return*/];
-                            }
-                        });
-                    }); });
-                }
+                // if (process.env.NEXT_BUILD) {
+                //   app.listen(PORT, async () => {
+                //     payload.logger.info("Next.js is building for production");
+                //     // @ts-expect-error
+                //     await nextBuild(path.join(__dirname, "../"));
+                //     process.exit();
+                //   });
+                // }
                 app.use("/api/trpc", trpcExpress.createExpressMiddleware({
                     router: trpc_1.appRouter,
                     createContext: createContext,
                 }));
                 app.use(function (req, res) { return (0, next_utils_1.nextHandler)(req, res); });
+                // TODO: Not working - app.listen twice getting error - Address already in use
                 next_utils_1.nextApp.prepare().then(function () {
-                    payload.logger.info("Next.js started");
-                    app.listen(PORT, function () { return __awaiter(void 0, void 0, void 0, function () {
-                        return __generator(this, function (_a) {
-                            payload.logger.info("Next.js App URL: ".concat(process.env.NEXT_PUBLIC_SERVER_URL));
-                            return [2 /*return*/];
-                        });
-                    }); });
+                    if (process.env.NEXT_BUILD) {
+                        app.listen(PORT, function () { return __awaiter(void 0, void 0, void 0, function () {
+                            return __generator(this, function (_a) {
+                                switch (_a.label) {
+                                    case 0:
+                                        payload.logger.info("Next.js is building for production");
+                                        // @ts-expect-error
+                                        return [4 /*yield*/, (0, build_1.default)(path_1.default.join(__dirname, "../"))];
+                                    case 1:
+                                        // @ts-expect-error
+                                        _a.sent();
+                                        process.exit();
+                                        return [2 /*return*/];
+                                }
+                            });
+                        }); });
+                    }
+                    else {
+                        app.listen(PORT, function () { return __awaiter(void 0, void 0, void 0, function () {
+                            return __generator(this, function (_a) {
+                                payload.logger.info("Next.js started");
+                                payload.logger.info("Next.js App URL: ".concat(process.env.NEXT_PUBLIC_SERVER_URL));
+                                return [2 /*return*/];
+                            });
+                        }); });
+                    }
                 });
                 return [2 /*return*/];
         }

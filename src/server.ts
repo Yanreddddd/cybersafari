@@ -47,16 +47,18 @@ const start = async () => {
       },
     },
   });
+
+   // TODO: Not working - app.listen twice getting error - Address already in use
   
-  if (process.env.NEXT_BUILD) {
-    app.listen(PORT, async () => {
-      payload.logger.info("Next.js is building for production");
-      // @ts-expect-error
-      await nextBuild(path.join(__dirname, "../"));
+  // if (process.env.NEXT_BUILD) {
+  //   app.listen(PORT, async () => {
+  //     payload.logger.info("Next.js is building for production");
+  //     // @ts-expect-error
+  //     await nextBuild(path.join(__dirname, "../"));
   
-      process.exit();
-    });
-  }
+  //     process.exit();
+  //   });
+  // }
 
   app.use(
     "/api/trpc",
@@ -68,14 +70,22 @@ const start = async () => {
 
   app.use((req, res) => nextHandler(req, res));
 
-  nextApp.prepare().then(() => {
-    payload.logger.info("Next.js started");
+  // TODO: Not working - app.listen twice getting error - Address already in use
 
-    app.listen(PORT, async () => {
-      payload.logger.info(
-        `Next.js App URL: ${process.env.NEXT_PUBLIC_SERVER_URL}`
-      );
-    });
+  nextApp.prepare().then(() => {
+    if (process.env.NEXT_BUILD) {
+      app.listen(PORT, async () => {
+        payload.logger.info("Next.js is building for production");
+        // @ts-expect-error
+        await nextBuild(path.join(__dirname, "../"));
+        process.exit();
+      });
+    } else {
+      app.listen(PORT, async () => {
+        payload.logger.info("Next.js started");
+        payload.logger.info(`Next.js App URL: ${process.env.NEXT_PUBLIC_SERVER_URL}`);
+      });
+    }
   });
 };
 
