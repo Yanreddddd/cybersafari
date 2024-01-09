@@ -11,9 +11,6 @@ interface PaymentStatusProps {
 }
 
 const PaymentStatus = ({ orderEmail, orderId, isPaid }: PaymentStatusProps) => {
-  console.log(`Email: ${orderEmail}`);
-  console.log(`Order Id: ${orderId}`);
-  console.log(`IsPaid: ${isPaid}`);
 
   const router = useRouter();
 
