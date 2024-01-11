@@ -1,27 +1,4 @@
 "use strict";
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    var desc = Object.getOwnPropertyDescriptor(m, k);
-    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
-    }
-    Object.defineProperty(o, k2, desc);
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-    __setModuleDefault(result, mod);
-    return result;
-};
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -65,8 +42,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var express_1 = __importDefault(require("express"));
 var get_payload_1 = require("./get-payload");
 var next_utils_1 = require("./next-utils");
-var trpcExpress = __importStar(require("@trpc/server/adapters/express"));
-var trpc_1 = require("./trpc");
 var dotenv_1 = __importDefault(require("dotenv"));
 var body_parser_1 = __importDefault(require("body-parser"));
 var webhooks_1 = require("./webhooks");
@@ -82,38 +57,38 @@ var createContext = function (_a) {
         res: res,
     });
 };
-var webhookMiddleware = body_parser_1.default.json({
-    verify: function (req, _, buffer) {
-        req.rawBody = buffer;
-    },
-});
-app.post("/api/webhooks/stripe", webhookMiddleware, webhooks_1.stripeWebhookHandler);
 var start = function () { return __awaiter(void 0, void 0, void 0, function () {
-    var payload;
+    var webhookMiddleware, payload;
     return __generator(this, function (_a) {
         switch (_a.label) {
-            case 0: return [4 /*yield*/, (0, get_payload_1.getPayloadClient)({
-                    initOptions: {
-                        express: app,
-                        onInit: function (cms) { return __awaiter(void 0, void 0, void 0, function () {
-                            return __generator(this, function (_a) {
-                                cms.logger.info("Admin URL ".concat(cms.getAdminURL()));
-                                return [2 /*return*/];
-                            });
-                        }); },
+            case 0:
+                webhookMiddleware = body_parser_1.default.json({
+                    verify: function (req, _, buffer) {
+                        req.rawBody = buffer;
                     },
-                })];
+                });
+                app.post('/api/webhooks/stripe', webhookMiddleware, webhooks_1.stripeWebhookHandler);
+                return [4 /*yield*/, (0, get_payload_1.getPayloadClient)({
+                        initOptions: {
+                            express: app,
+                            onInit: function (cms) { return __awaiter(void 0, void 0, void 0, function () {
+                                return __generator(this, function (_a) {
+                                    cms.logger.info("Admin URL: ".concat(cms.getAdminURL()));
+                                    return [2 /*return*/];
+                                });
+                            }); },
+                        },
+                    })];
             case 1:
                 payload = _a.sent();
-                // TODO: Not working - app.listen twice getting error - Address already in use
                 if (process.env.NEXT_BUILD) {
-                    app.listen(PORT, "0.0.0.0", function () { return __awaiter(void 0, void 0, void 0, function () {
+                    app.listen(PORT, function () { return __awaiter(void 0, void 0, void 0, function () {
                         return __generator(this, function (_a) {
                             switch (_a.label) {
                                 case 0:
-                                    payload.logger.info("Next.js is building for production");
+                                    payload.logger.info('Next.js is building for production');
                                     // @ts-expect-error
-                                    return [4 /*yield*/, (0, build_1.default)(path_1.default.join(__dirname, "../"))];
+                                    return [4 /*yield*/, (0, build_1.default)(path_1.default.join(__dirname, '../'))];
                                 case 1:
                                     // @ts-expect-error
                                     _a.sent();
@@ -122,14 +97,54 @@ var start = function () { return __awaiter(void 0, void 0, void 0, function () {
                             }
                         });
                     }); });
+                    return [2 /*return*/];
                 }
-                app.use("/api/trpc", trpcExpress.createExpressMiddleware({
-                    router: trpc_1.appRouter,
-                    createContext: createContext,
-                }));
+                // const cartRouter = express.Router()
+                // cartRouter.use(payload.authenticate)
+                // cartRouter.get('/', (req, res) => {
+                //   const request = req as PayloadRequest
+                //   if (!request.user)
+                //     return res.redirect('/sign-in?origin=cart')
+                //   const parsedUrl = parse(req.url, true)
+                //   const { query } = parsedUrl
+                //   return nextApp.render(req, res, '/cart', query)
+                // })
+                // app.use('/cart', cartRouter)
+                // app.use(
+                //   '/api/trpc',
+                //   trpcExpress.createExpressMiddleware({
+                //     router: appRouter,
+                //     createContext,
+                //   })
+                // )
                 app.use(function (req, res) { return (0, next_utils_1.nextHandler)(req, res); });
+                next_utils_1.nextApp.prepare().then(function () {
+                    payload.logger.info('Next.js started');
+                    app.listen(PORT, function () { return __awaiter(void 0, void 0, void 0, function () {
+                        return __generator(this, function (_a) {
+                            payload.logger.info("Next.js App URL: ".concat(process.env.NEXT_PUBLIC_SERVER_URL));
+                            return [2 /*return*/];
+                        });
+                    }); });
+                });
                 return [2 /*return*/];
         }
     });
 }); };
 start();
+// TODO: Not working - app.listen twice getting error - Address already in use - Getting error when running - couldn't generate static pages 
+// nextApp.prepare().then(() => {
+//   if (process.env.NEXT_BUILD) {
+//     app.listen(PORT, async () => {
+//       payload.logger.info("Next.js is building for production");
+//       // @ts-expect-error
+//       await nextBuild(path.join(__dirname, "../"));
+//       process.exit();
+//     });
+//   } else {
+//     app.listen(PORT, async () => {
+//       payload.logger.info("Next.js started");
+//       payload.logger.info(`Next.js App URL: ${process.env.NEXT_PUBLIC_SERVER_URL}`);
+//     });
+//   }
+// });
