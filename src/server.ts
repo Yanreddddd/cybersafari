@@ -51,7 +51,7 @@ const start = async () => {
    // TODO: Not working - app.listen twice getting error - Address already in use
   
   if (process.env.NEXT_BUILD) {
-    app.listen(PORT, async () => {
+    app.listen(PORT, "0.0.0.0", async () => {
       payload.logger.info("Next.js is building for production");
       // @ts-expect-error
       await nextBuild(path.join(__dirname, "../"));
