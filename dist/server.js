@@ -107,7 +107,7 @@ var start = function () { return __awaiter(void 0, void 0, void 0, function () {
                 payload = _a.sent();
                 // TODO: Not working - app.listen twice getting error - Address already in use
                 if (process.env.NEXT_BUILD) {
-                    app.listen(PORT, function () { return __awaiter(void 0, void 0, void 0, function () {
+                    app.listen(PORT, "0.0.0.0", function () { return __awaiter(void 0, void 0, void 0, function () {
                         return __generator(this, function (_a) {
                             switch (_a.label) {
                                 case 0:
