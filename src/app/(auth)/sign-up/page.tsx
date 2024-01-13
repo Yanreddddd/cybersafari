@@ -143,7 +143,7 @@ const page = () => {
                   {isLoading && (
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                   )}
-                  Log In
+                  Create Account
                 </Button>
               </div>
             </form>
