@@ -1,21 +1,62 @@
-import { CollectionConfig } from "payload/types";
+import { Access, CollectionConfig } from "payload/types";
 import { BeforeChangeHook } from "payload/dist/collections/config/types";
+import { PrimaryActionEmailHtml } from "@/components/emails/PrimaryActionEmail";
+
+const adminsAndUser: Access = ({ req: { user } }) => {
+  if (user.role === "admin") return true
+
+  return {
+    id: {
+      equals: user.id,
+    }
+  }
+};
 
 export const Users: CollectionConfig = {
   slug: "users",
-  auth: { 
+  auth: {
     verify: {
       generateEmailHTML: ({ token }) => {
-        return `<a href='${process.env.NEXT_PUBLIC_SERVER_URL}/verify-email?token=${token}'>Verify Account</a>`
-      }
-    }
+        return PrimaryActionEmailHtml({
+          actionLabel: "Verify Email",
+          buttonText: "Verify Email",
+          href: `${process.env.NEXT_PUBLIC_SERVER_URL}/verify-email?token=${token}`,
+        });
+      },
+    },
   },
   access: {
-    read: () => true,
+    read: adminsAndUser,
     create: () => true,
+    update: ({req}) => req.user.role === "admin",
+    delete: ({req}) => req.user.role === "admin",
+  },
+  admin: {
+    hidden: ({user}) => user.role !== "admin",
+    defaultColumns: ['id']
   },
   fields: [
-    { 
+    {
+      name: "products",
+      label: "Products",
+      type: "relationship",
+      relationTo: "products",
+      hasMany: true,
+      admin: {
+        condition: () => false,
+      },
+    },
+    {
+      name: "products_files",
+      label: "Products Files",
+      type: "relationship",
+      relationTo: "product_files",
+      hasMany: true,
+      admin: {
+        condition: () => false,
+      },
+    },
+    {
       name: "role",
       defaultValue: "user",
       required: true,

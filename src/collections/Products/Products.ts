@@ -1,8 +1,10 @@
-import { BeforeChangeHook } from "payload/dist/collections/config/types";
+import {
+  BeforeChangeHook,
+  AfterChangeHook,
+} from "payload/dist/collections/config/types";
 import { PRODUCT_CATEGORIES } from "../../config";
-import { CollectionConfig } from "payload/types";
-import { Product } from "@/payload-types";
-import { User } from "payload/dist/auth";
+import { Access, CollectionConfig } from "payload/types";
+import { Product, User } from "../../payload-types";
 import { stripe } from "../../lib/stripe";
 
 const addUser: BeforeChangeHook<Product> = async ({ req, data }) => {
@@ -10,14 +12,80 @@ const addUser: BeforeChangeHook<Product> = async ({ req, data }) => {
 
   return { ...data, user: user.id };
 };
+
+// Making sure that the User's products are in sync with the database and if the user owns the product. Data Integrity
+const syncUser: AfterChangeHook<Product> = async ({ req, doc }) => {
+  const fullUser = await req.payload.findByID({
+    collection: "users",
+    id: req.user.id,
+  });
+
+  if (fullUser && typeof fullUser === "object") {
+    const { products } = fullUser;
+
+    const allIDs = [
+      ...(products?.map((product) =>
+        typeof product === "object" ? product.id : product
+      ) || []),
+    ];
+
+    const createdProductIDs = allIDs.filter(
+      (id, index) => allIDs.indexOf(id) === index
+    );
+
+    const dataToUpdate = [...createdProductIDs, doc.id];
+
+    await req.payload.update({
+      collection: "users",
+      id: fullUser.id,
+      data: {
+        products: dataToUpdate,
+      },
+    });
+  }
+};
+
+const isAdminOrHasAccess =
+  (): Access =>
+  ({ req: { user: _user } }) => {
+    const user = _user as User | undefined
+
+    if (!user) return false
+    if (user.role === 'admin') return true
+
+    const userProductIDs = (user.products || []).reduce<
+      Array<string>
+    >((acc, product) => {
+      if (!product) return acc
+      if (typeof product === 'string') {
+        acc.push(product)
+      } else {
+        acc.push(product.id)
+      }
+
+      return acc
+    }, [])
+
+    return {
+      id: {
+        in: userProductIDs,
+      },
+    }
+  }
 // Payload Data Config Docs: https://payloadcms.com/docs/guides/data-configuration
 export const Products: CollectionConfig = {
   slug: "products",
   admin: {
     useAsTitle: "name",
   },
-  access: {},
+  access: {
+    read: isAdminOrHasAccess(),
+    create: isAdminOrHasAccess(),
+    update: isAdminOrHasAccess(),
+  },
   hooks: {
+    // Sync user's products with the database
+    afterChange: [syncUser],
     // Create and Update products to Stripe
     beforeChange: [
       addUser,
@@ -37,8 +105,8 @@ export const Products: CollectionConfig = {
             ...data,
             stripeId: createdProduct.id,
             priceId: createdProduct.default_price as string,
-          }
-          return updated
+          };
+          return updated;
         } else if (args.operation === "update") {
           const data = args.data as Product;
 
@@ -51,8 +119,8 @@ export const Products: CollectionConfig = {
             ...data,
             stripeId: updatedProduct.id,
             priceId: updatedProduct.default_price as string,
-          }
-          return updated
+          };
+          return updated;
           // const { data, req } = args;
           // const user = req.user as User;
           // const product = data as Product;
