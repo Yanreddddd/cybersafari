@@ -1,5 +1,5 @@
-import MaxWidthWrapper from '@/components/MaxWidthWrapper'
-import ProductReel from '@/components/ProductReel'
+import MaxWidthWrapper from '../../components/MaxWidthWrapper'
+import ProductReel from '../../components/ProductReel'
 import { PRODUCT_CATEGORIES } from '@/config'
 
 type Param = string | string[] | undefined
@@ -23,7 +23,7 @@ const ProductsPage = ({
   )?.label
 
   return (
-    <MaxWidthWrapper>
+    <MaxWidthWrapper children={undefined}>
       <ProductReel
         title={label ?? 'Browse high-quality assets'}
         query={{
